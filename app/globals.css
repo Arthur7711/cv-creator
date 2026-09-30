@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  --accent: #2563eb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* ------------------------------------------------------------------ */
+/* CV document                                                         */
+/* ------------------------------------------------------------------ */
+
+.cv-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #334155;
+  font-size: 11px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.cv-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cv-desc p + p,
+.cv-desc ul + p,
+.cv-desc p + ul {
+  margin-top: 0.35em;
+}
+
+.cv-desc ul {
+  list-style: disc;
+  padding-left: 1.2em;
+}
+
+.cv-desc li {
+  padding-left: 0.15em;
+}
+
+.cv-desc li + li {
+  margin-top: 0.2em;
+}
+
+.cv-entry {
+  break-inside: avoid;
+}
+
+/* ------------------------------------------------------------------ */
+/* Print: output only the A4 document                                  */
+/* ------------------------------------------------------------------ */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .cv-preview-container,
+  .cv-preview-sizer {
+    width: 210mm !important;
+    height: auto !important;
+    margin: 0 !important;
+  }
+
+  .cv-print-root {
+    position: static !important;
+    transform: none !important;
+    box-shadow: none !important;
+    width: 210mm !important;
+  }
+
+  .cv-page {
+    min-height: 0;
+  }
 }
