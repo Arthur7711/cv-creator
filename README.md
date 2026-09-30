@@ -10,6 +10,7 @@ A CV / résumé builder built with Next.js 16, React 19 and Tailwind CSS 4. Fill
 - **Sections**: personal details and summary, work experience, education, skills, projects, languages, links. Reorder or remove entries with one click.
 - **Bullet points**: start a description line with `-` to render it as a bullet.
 - **PDF export**: vector output with selectable text, via the browser's print dialog.
+- **Import an existing CV from PDF**: upload your current résumé and the app fills in every section for you.
 - **Autosave** to the browser's localStorage, plus JSON import/export for backups.
 - Works on phones with an Edit / Preview toggle.
 
@@ -26,13 +27,29 @@ Open [http://localhost:3000](http://localhost:3000). The app loads with sample c
 
 Click **Export PDF**. The browser print dialog opens with the CV already laid out on A4 with zero margins. Choose **Save as PDF** as the destination (Chrome, Edge and Firefox all offer this). Background colors are preserved automatically.
 
+## Importing an existing CV
+
+Open **Import → From PDF résumé** and pick a PDF. The file is sent to the app's own `/api/parse-cv` route, which reads it in one of two ways:
+
+1. **AI extraction (recommended).** If `ANTHROPIC_API_KEY` is set on the server, the PDF is sent to Claude, which returns every section as structured data. This handles any layout, including scanned documents.
+2. **Built-in text parser (fallback).** Without a key, the app reconstructs the text layout from the PDF (columns, headings, dates, bullet points) and fills the sections using résumé conventions. It works well on typical CVs but may need a quick review afterwards.
+
+To enable AI extraction, copy `.env.example` to `.env.local` and add your key:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Uploaded PDFs are processed in memory and are not stored.
+
 ## Project structure
 
 ```
 app/                  Root layout, global styles and print CSS
+  api/parse-cv/       PDF import endpoint (AI extraction with text-parser fallback)
 components/
   cv-builder.tsx      Page shell: toolbar, editor column, preview column
-  toolbar.tsx         Export PDF, JSON import/export, sample and clear actions
+  toolbar.tsx         Export PDF, PDF/JSON import, sample and clear actions
   editor/             Form sections for each part of the CV
   preview/            A4 page, the three templates and the scaled preview wrapper
   ui/                 Buttons, inputs and icons
@@ -40,6 +57,9 @@ lib/
   cv-types.ts         Data model, defaults and sample content
   use-cv-store.ts     State, localStorage persistence and list helpers
   format.ts           Description parsing, date ranges and URL helpers
+  cv-schema.ts        Zod schema for extracted CVs (shared by AI and fallback paths)
+  pdf-text.ts         PDF text extraction that rebuilds lines and columns
+  parse-cv-text.ts    Heuristic résumé parser used when no API key is configured
 ```
 
 ## Scripts
